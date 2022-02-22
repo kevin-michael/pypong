@@ -10,7 +10,7 @@ def initial_window():
     window.blit(points_right, (width/2+points_right.get_width()*2, 10))
 
 
-if __name__=="__main__": 
+if __name__=="__main__":
     import pygame
     import sys
     import random
@@ -18,16 +18,20 @@ if __name__=="__main__":
     from objects import *
     from colors import *
 
+    pygame.init()
+
     fps = 60
-    size = width, height = 1920, 1080
+    screen = pygame.display.Info()
+    size = width, height = screen.current_w, screen.current_h
     paddle = paddle_width, paddle_height = 10, int(0.15*height)
+    vel_paddle = 0.002*width
+    vel_ball = 0.009*width
 
     p_left = p_right = 0
     win_score = 5
     won = False
 
     fpsclock = pygame.time.Clock()
-    pygame.init()
     window = pygame.display.set_mode(size, pygame.FULLSCREEN)
     pygame.display.set_caption("PY PONG")
 
@@ -36,12 +40,12 @@ if __name__=="__main__":
     color = Colors()
     fieldlines = FieldLines(color.white, width/2, 6)
 
-    left_paddle = Paddle(size, color.blue, 10, height/2-paddle_height/2, paddle_width, paddle_height, 0.002*width, pygame.K_w, pygame.K_s)
-    right_paddle = Paddle(size, color.red, width-10-paddle_width, height/2-paddle_height/2, paddle_width, paddle_height, 0.002*width, pygame.K_UP, pygame.K_DOWN)
+    left_paddle = Paddle(size, color.blue, 10, height/2-paddle_height/2, paddle_width, paddle_height, vel_paddle, pygame.K_w, pygame.K_s)
+    right_paddle = Paddle(size, color.red, width-10-paddle_width, height/2-paddle_height/2, paddle_width, paddle_height, vel_paddle, pygame.K_UP, pygame.K_DOWN)
 
-    ball = Ball(color.white, 10, width/2, height/2, 0.005*width, 0)
+    ball = Ball(color.white, 10, width/2, height/2, vel_ball, 0)
 
-    while True: 
+    while True:
         initial_window()
 
         for event in pygame.event.get():
@@ -49,18 +53,18 @@ if __name__=="__main__":
                 pygame.quit()
                 sys.exit()
 
-        if ball.vel_x < 0: 
+        if ball.vel_x < 0:
             if ball.x+ball.size/2 <= left_paddle.x+left_paddle.width and\
                ball.y+ball.size/2 >= left_paddle.y and\
                ball.y+ball.size/2 <= left_paddle.y+left_paddle.height:
                 ball.vel_x *= -1
-                ball.vel_y = random.randint(1, 5)
+                ball.vel_y = random.randint(-5, 5)
         if ball.vel_x > 0:
             if ball.x+ball.size/2 >= right_paddle.x and\
                ball.y+ball.size/2 >= right_paddle.y and\
                ball.y-ball.size/2 <= right_paddle.y+right_paddle.height:
                 ball.vel_x *= -1
-                ball.vel_y = random.randint(1, 5)
+                ball.vel_y = random.randint(-5, 5)
 
         if ball.y <= 0 or ball.y+ball.size >= height:
             ball.vel_y *= -1
@@ -84,9 +88,9 @@ if __name__=="__main__":
             if not won:
                 pygame.time.delay(3000)
 
-        if won: 
+        if won:
             initial_window()
-            winner = font.render(won_text, 1, color.white)
+            winner = font.render(won_text, 1, color.yellow)
             window.blit(winner, (width/2-winner.get_width()/2, height/4))
             pygame.display.update()
             pygame.time.delay(10000)
