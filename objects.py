@@ -1,3 +1,4 @@
+
 import pygame
 
 class Paddle:
@@ -42,10 +43,11 @@ class Ball:
     def draw(self, window):
         pygame.draw.rect(window, self.color, (self.x, self.y, self.size, self.size))
     
-    def reset(self):
+    def reset(self, direction, vel):
         self.x = self.x_origin
         self.y = self.y_origin
         self.vel_y = 0
+        self.vel_x = direction/abs(direction) * vel
 
 
 class FieldLines:

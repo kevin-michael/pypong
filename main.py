@@ -24,8 +24,8 @@ if __name__=="__main__":
     screen = pygame.display.Info()
     size = width, height = screen.current_w, screen.current_h
     paddle = paddle_width, paddle_height = 10, int(0.15*height)
-    vel_paddle = 0.002*width
-    vel_ball = 0.009*width
+    vel_paddle = 0.003*width
+    vel_ball = 0.008*width
 
     p_left = p_right = 0
     win_score = 5
@@ -57,14 +57,16 @@ if __name__=="__main__":
             if ball.x+ball.size/2 <= left_paddle.x+left_paddle.width and\
                ball.y+ball.size/2 >= left_paddle.y and\
                ball.y+ball.size/2 <= left_paddle.y+left_paddle.height:
-                ball.vel_x *= -1
-                ball.vel_y = random.randint(-5, 5)
+                phi = ((ball.y-left_paddle.y)/(left_paddle.height)*0.6+0.2)*math.pi
+                ball.vel_y = vel_ball * -math.cos(phi)
+                ball.vel_x = vel_ball * math.sin(phi)
         if ball.vel_x > 0:
             if ball.x+ball.size/2 >= right_paddle.x and\
                ball.y+ball.size/2 >= right_paddle.y and\
                ball.y-ball.size/2 <= right_paddle.y+right_paddle.height:
-                ball.vel_x *= -1
-                ball.vel_y = random.randint(-5, 5)
+                phi = ((ball.y-right_paddle.y)/(right_paddle.height)*0.6+0.2)*math.pi
+                ball.vel_y = vel_ball * -math.cos(phi)
+                ball.vel_x = -vel_ball * math.sin(phi)
 
         if ball.y <= 0 or ball.y+ball.size >= height:
             ball.vel_y *= -1
@@ -80,7 +82,7 @@ if __name__=="__main__":
                 if p_left >= win_score:
                     won = True
                     won_text= "Left player won, congratulations!"
-            ball.reset()
+            ball.reset(ball.vel_x, vel_ball)
             left_paddle.reset()
             right_paddle.reset()
             initial_window()
